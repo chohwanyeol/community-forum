@@ -87,6 +87,8 @@
 		</div>
 	</div>
 	<!-- 답변 반복 끝  -->
+
+
 	<!-- 페이징처리 시작 -->
 	<div th:if="${!paging.isEmpty()}">
 		<ul class="pagination justify-content-center">
@@ -108,6 +110,9 @@
 		</ul>
 	</div>
 	<!-- 페이징처리 끝 -->
+
+
+
 	<form th:action="@{/board/{category}/detail/{id}(category = ${question.category}, id=${question.id})}" method="get" id="searchForm">
 		<input type="hidden" id="page" name="page" th:value="${paging.number}">
 		<input type="hidden" id="order" name="order" th:value="${order}">

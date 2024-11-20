@@ -18,6 +18,6 @@ public class Category {
     @Column(unique = true)
     private String name;
 
-    //@OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
-    //private List<Question> questionsList;
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
+    private List<Question> questionsList;
 }

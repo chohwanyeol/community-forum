@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<head>
+    <title>API 문서</title>
+    <style>
+        .token {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .token:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content" class="container">
+    <h1>API 문서</h1>
+    <p>게시판 Open API에 오신 것을 환영합니다. 아래는 사용 가능한 API 엔드포인트와 설명입니다.</p>
+
+    <p>
+
+        <br>이 API를 사용하려면 먼저 로그인하여 토큰을 받아야 합니다. 토큰키를 "Authorization" 헤더에 추가해주세요.<br>
+        예시: <code>{"Authorization": "Bearer 토큰키입력"}</code><br>
+        토큰키를 발급받으면 저장해야 합니다. 토큰키 분실 시 재발급이 필요하며, 기존 토큰키는 삭제됩니다.
+    </p>
+
+    <!-- 버튼 렌더링: 토큰이 없는 경우 -->
+    <a th:if="${exist} == false" th:href="@{/user/openapi(access=true)}" class="token">토큰 발급</a>
+
+    <!-- 버튼 렌더링: 토큰이 있는 경우 -->
+    <a th:if="${exist} == true" th:href="@{/user/openapi(access=true)}" class="token">토큰 재발급</a>
+
+    <!-- 토큰 키 출력 -->
+    <div th:if="${TokenKey != null}">
+        <p><strong>발급된 토큰:</strong></p>
+        <code th:text="${TokenKey}"></code>
+    </div>
+
+    <h2><br><br>API 사용법<br></h2>
+    <p>
+        이 API를 사용하려면 먼저 로그인하여 토큰을 받아야 합니다. 토큰키를 "Authorization" 헤더에 추가해주세요.<br>
+        예시: <code>{"Authorization": "Bearer 토큰키입력"}</code><br>
+        토큰키를 발급받으면 저장해야 합니다. 토큰키 분실 시 재발급이 필요하며, 기존 토큰키는 삭제됩니다.<br><br>
+    </p>
+
+    <h2>카테고리 및 질문 API 문서</h2>
+
+    <h3><br>카테고리 API<br><br></h3>
+    <ul>
+        <li><strong>GET /openapi/category</strong></li>
+        <p>모든 카테고리를 조회합니다.</p>
+        <p><strong>요청 헤더:</strong></p>
+        <ul>
+            <li>Authorization: Bearer &lt;토큰&gt; (필수)</li>
+        </ul>
+        <p><strong>응답:</strong></p><br><br>
+        <pre>
+[
+    {"id": 1, "name": "일반"},
+    {"id": 2, "name": "기술"}
+]
+        </pre>
+    </ul>
+
+    <h3><br><br><br>질문 API</h3>
+    <ul>
+        <li><strong>GET /openapi/question</strong></li>
+        <p>모든 질문을 조회합니다.</p>
+        <p><strong>요청 헤더:</strong></p>
+        <ul>
+            <li>Authorization: Bearer &lt;토큰&gt; (필수)</li>
+        </ul>
+        <p><strong>응답:</strong></p>
+        <pre>
+[
+    {
+        "id": 1,
+        "subject": "샘플 질문",
+        "content": "샘플 내용",
+        "authorUsername": "user123",
+        "categoryName": "일반",
+        "createDate": "2024-11-18T14:00:00",
+        "modifyDate": null
+    }
+]<br><br><br>
+        </pre>
+
+
+        <li><strong>GET /openapi/question/{username}</strong></li>
+        <p>해당 유저의 질문을 조회합니다.</p>
+        <p><strong>요청 헤더:</strong></p>
+        <ul>
+            <li>Authorization: Bearer &lt;토큰&gt; (필수)</li>
+        </ul>
+        <p><strong>응답:</strong></p>
+        <pre>
+[
+    {
+        "id": 1,
+        "subject": "샘플 질문",
+        "content": "샘플 내용",
+        "authorUsername": "user123",
+        "categoryName": "일반",
+        "createDate": "2024-11-18T14:00:00",
+        "modifyDate": null
+    }
+]
+        <br><br><br></pre>
+
+        <li><strong>POST /openapi/question/{username}</strong></li>
+        <p>토큰 사용자의 질문을 생성합니다.</p>
+        <p><strong>요청 헤더:</strong></p>
+        <ul>
+            <li>Authorization: Bearer &lt;토큰&gt; (필수)</li>
+        </ul>
+        <p><strong>요청 바디:</strong></p>
+        <pre>
+{
+    "subject": "새 질문",
+    "content": "질문 내용",
+    "categoryName": "일반"
+}
+        </pre>
+        <p><strong>응답:</strong></p>
+        <pre>
+{"message": "Question created successfully!"}
+        <br><br><br></pre>
+
+        <li><strong>PATCH /openapi/question/{username}/{id}</strong></li>
+        <p>토큰 사용자의 해당 ID 질문 내용을 수정합니다.</p>
+        <p><strong>요청 헤더:</strong></p>
+        <ul>
+            <li>Authorization: Bearer &lt;토큰&gt; (필수)</li>
+        </ul>
+        <p><strong>요청 바디:</strong></p>
+        <pre>
+{
+    "subject": "수정된 제목",
+    "content": "수정된 내용"
+}
+        </pre>
+        <p><strong>응답:</strong></p>
+        <pre>
+{"message": "Question Updated successfully!"}
+        <br><br><br></pre>
+
+        <li><strong>DELETE /openapi/question/{id}</strong></li>
+        <p>토큰 사용자의 해당 ID 질문을 삭제합니다.</p>
+        <p><strong>요청 헤더:</strong></p>
+        <ul>
+            <li>Authorization: Bearer &lt;토큰&gt; (필수)</li>
+        </ul>
+        <p><strong>응답:</strong></p>
+        <pre>
+{"message": "Question Deleted successfully!"}
+        <br><br><br></pre>
+    </ul>
+</div>
+</body>
+</html>

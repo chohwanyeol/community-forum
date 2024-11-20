@@ -18,7 +18,7 @@ public class Answer {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(columnDefinition = "TEXT")
+	@Column(columnDefinition = "VARCHAR(4000)")
 	private String content;
 
 	private LocalDateTime createDate;

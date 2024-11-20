@@ -70,6 +70,17 @@ public class QuestionController {
 					   @PathVariable("categoryName") String categoryName){
 		Question question = this.questionService.getQuestion(id);
 		Page<Answer> paging = this.answerService.getList(question, page, order);
+
+
+		System.out.println("Paged Answers:");
+		for (Answer answer : paging.getContent()) {
+			System.out.println("-------------------------------");
+			System.out.println("Answer ID: " + answer.getId());
+			System.out.println("Content: " + answer.getContent());
+			System.out.println("-------------------------------");
+		}
+
+
 		model.addAttribute("question", question);
 		model.addAttribute("paging", paging);
 		model.addAttribute("order", order);

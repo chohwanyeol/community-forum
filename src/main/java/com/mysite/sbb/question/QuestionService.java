@@ -5,24 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.mysite.sbb.api.questionApi.QuestionApiDTO;
 import com.mysite.sbb.category.Category;
+import com.mysite.sbb.category.CategoryRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.mysite.sbb.DataNotFoundException;
-import com.mysite.sbb.answer.Answer;
 import com.mysite.sbb.user.SiteUser;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -30,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class QuestionService {
 
 	private final QuestionRepository questionRepository;
+	private final CategoryRepository categoryRepository;
 
 	/*
 	private Specification<Question> search(String kw) {
@@ -93,5 +89,46 @@ public class QuestionService {
 	public void vote(Question question, SiteUser siteUser) {
 		question.getVoter().add(siteUser);
 		this.questionRepository.save(question);
+	}
+
+    public List<QuestionApiDTO> getAllDtoList() {
+		return questionRepository.findDTOsAll();
+    }
+
+	public List<QuestionApiDTO> getUsernameDtoList(String username) {
+		return questionRepository.findDTOsByUsername(username);
+	}
+
+	@Transactional
+	public String create(QuestionApiDTO questionApiDTO,SiteUser siteUser) {
+		Question question = questionApiDTO.toEntity();
+		question.setAuthor(siteUser);
+		Category category = categoryRepository.findByName(questionApiDTO.getCategoryName());
+		if (category==null) {
+			throw new DataNotFoundException("category not found");
+		}
+		question.setCategory(category);
+		questionRepository.save(question);
+		return "Success";
+	}
+
+	public void update(QuestionApiDTO questionApiDTO, Integer id) {
+		Question question = questionRepository.findById(id).orElse(null);
+		if (question==null){
+			throw new DataNotFoundException("Id not found");
+		}
+
+		question.setSubject(questionApiDTO.getSubject());
+		question.setContent(questionApiDTO.getContent());
+		question.setModifyDate(LocalDateTime.now());
+		questionRepository.save(question);
+	}
+
+	public void delete(Integer id) {
+		Question question = questionRepository.findById(id).orElse(null);
+		if (question==null){
+			throw new DataNotFoundException("Id not found");
+		}
+		questionRepository.delete(question);
 	}
 }

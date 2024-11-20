@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ public class AnswerService {
 
 	private final AnswerRepository answerRepository;
 
+	@Transactional
 	public Answer create(Question question, String content, SiteUser author) {
 		Answer answer = new Answer();
 		answer.setContent(content);
@@ -35,24 +37,25 @@ public class AnswerService {
 	}
 
 	public Answer getAnswer(Integer id) {
-		Optional<Answer> answer = this.answerRepository.findById(id);
-		if (answer.isPresent()) {
-			return answer.get();
-		} else {
-			throw new DataNotFoundException("answer not found");
-		}
+		return this.answerRepository.findById(id)
+				.orElseThrow(() -> new DataNotFoundException("answer not found"));
+
 	}
 
+
+	@Transactional
 	public void modify(Answer answer, String content) {
 		answer.setContent(content);
 		answer.setModifyDate(LocalDateTime.now());
 		this.answerRepository.save(answer);
 	}
 
+	@Transactional
 	public void delete(Answer answer) {
 		this.answerRepository.delete(answer);
 	}
 
+	@Transactional
 	public void vote(Answer answer, SiteUser siteUser) {
 		answer.getVoter().add(siteUser);
 		this.answerRepository.save(answer);
@@ -68,13 +71,17 @@ public class AnswerService {
 		//int question_id = question.getId();
 		if(Objects.equals(order, "recent")) {
 			sorts.add(Sort.Order.desc("createDate"));
+			Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+			return this.answerRepository.findAllByQuestion(question, pageable);
 		}
 		else{
-			sorts.add(Sort.Order.desc("voter"));
-			sorts.add(Sort.Order.desc("createDate"));
+			sorts.add(Sort.Order.desc("voter"));  // `voter`가 null이면 맨 뒤로 정렬
+			//sorts.add(Sort.Order.desc("createDate"));
+			Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+			return this.answerRepository.findAnswersByQuestionOrdered(question.getId(), pageable);
 		}
-		Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-		return this.answerRepository.findAllByQuestion(question, pageable);
+
+
 
 
 	}

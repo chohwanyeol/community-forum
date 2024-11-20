@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.mysite.sbb.device.DeviceService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -33,6 +34,8 @@ public class UserSecurityService implements UserDetailsService {
 		} else {
 			authorities.add(new SimpleGrantedAuthority(UserRole.USER.getValue()));
 		}
+
+
 		return new User(siteUser.getUsername(), siteUser.getPassword(), authorities);
 	}
 }
