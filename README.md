@@ -9,7 +9,7 @@
 
 #### **1-1. 프로젝트 기술 스택**  
 
-| **백엔드** | **프론트엔드** |
+|  |  |
 |-----------|--------------|
 | **IDE** | IntelliJ | VS Code |
 | **Framework** | Spring Boot | Thymeleaf |
